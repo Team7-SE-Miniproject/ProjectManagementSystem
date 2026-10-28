@@ -1,0 +1,101 @@
+Summary,Issue key,Issue id,Issue Type,Status,Project key,Project name,Project type,Project lead,Project lead id,Project description,Priority,Resolution,Assignee,Assignee Id,Reporter,Reporter Id,Creator,Creator Id,Created,Updated,Last Viewed,Resolved,Due date,Votes,Description,Environment,Watchers,Watchers Id,Original estimate,Remaining Estimate,Time Spent,Work Ratio,Σ Original Estimate,Σ Remaining Estimate,Σ Time Spent,Security Level,Custom field (Actual end),Custom field (Actual start),Custom field (Approvals),Custom field (Change reason),Custom field (Change risk),Custom field (Change type),Custom field (Development),Custom field (Epic Color),Custom field (Epic Name),Custom field (Epic Status),Custom field (Focus Areas),Custom field (Goals),Custom field (Impact),Custom field (Incident manager),Custom field (Issue color),Custom field (Locked forms),Custom field (Open forms),Custom field (Project overview key),Custom field (Project overview status),Custom field (Rank),Custom field (Request Type),Custom field (Sentiment),Sprint,Custom field (Start date),Custom field (Status pages),Custom field (Story Points),Custom field (Story point estimate),Custom field (Submitted forms),Custom field (Target end),Custom field (Target start),Custom field (Team),Custom field (Total forms),Custom field (Vulnerability),Custom field (Vulnerability),Custom field (Work item created forms),Custom field ([CHART] Date of First Response),Custom field ([CHART] Time in Status),Parent,Parent key,Parent summary,Status category,Status category changed
+Linking db to backend,PROJ-12,10048,Story,To Do,PROJ,Proj1,software,Seshank Padarthi,712020:518c4693-2025-474d-88ca-3108bfb85f87,,Medium,,,,Seshank Padarthi,712020:518c4693-2025-474d-88ca-3108bfb85f87,Seshank Padarthi,712020:518c4693-2025-474d-88ca-3108bfb85f87,28/Oct/26 10:40 AM,28/Oct/26 11:00 AM,,,,0,"*User Story:*
+
+As a developer, I want to connect the database to the backend so that the application can store, retrieve, update, and manage data efficiently.
+
+*Scope:*
+
+* Establish a connection between the backend application and the database.
+* Configure database connection credentials and environment variables securely.
+* Implement database connection and disconnection handling.
+* Enable backend services to execute database queries.
+* Handle database connection failures and query errors.
+* Verify that the backend can successfully communicate with the database.
+
+*Acceptance Criteria:*
+
+# The backend successfully connects to the configured database.
+# Database credentials are stored securely and are not hardcoded into the source code.
+# The backend can insert and retrieve data from the database.
+# Database errors are handled appropriately without crashing the application.
+# The application manages database connections correctly.
+# Database operations are tested and verified.
+# The database integration works with the application's existing backend functionality.",,Seshank Padarthi,712020:518c4693-2025-474d-88ca-3108bfb85f87,,,,,,,,,,,ApprovalsCFValue{approvals=[]},,,,{},,,,,,,,,,,,,0|i0001h:,,,PROJ Sprint 1,,,,,,,,,,,,,,,,,,To Do,28/Oct/26 10:40 AM
+Register Page UI,PROJ-11,10047,Story,To Do,PROJ,Proj1,software,Seshank Padarthi,712020:518c4693-2025-474d-88ca-3108bfb85f87,,Medium,,,,Seshank Padarthi,712020:518c4693-2025-474d-88ca-3108bfb85f87,Seshank Padarthi,712020:518c4693-2025-474d-88ca-3108bfb85f87,28/Oct/26 10:36 AM,28/Oct/26 10:37 AM,,,,0,"As a new user, I want a registration page where I can enter my account details so that I can register for the application.
+
+Scope:
+
+* Design the registration page layout.
+* Add the required registration fields, such as name, email, and password.
+* Add a Register or Create Account button.
+* Include input validation and error message areas.
+* Add a link to the login page.
+* Make the page responsive for desktop and mobile devices.
+
+Acceptance Criteria:
+
+# The page displays all required registration fields.
+# Each field has a clear label.
+# Required fields are validated before submission.
+# Invalid input receives appropriate feedback.
+# A link to the login page is available.
+# The layout works on desktop and mobile screens.
+# The interface can be connected to the Create User functionality.",,Seshank Padarthi,712020:518c4693-2025-474d-88ca-3108bfb85f87,,,,,,,,,,,ApprovalsCFValue{approvals=[]},,,,{},,,,,,,,,,,,,0|i0001d:f,,,PROJ Sprint 1,,,,,,,,,,,,,,,,,,To Do,28/Oct/26 10:36 AM
+Login Page UI,PROJ-10,10046,Story,To Do,PROJ,Proj1,software,Seshank Padarthi,712020:518c4693-2025-474d-88ca-3108bfb85f87,,Medium,,,,Seshank Padarthi,712020:518c4693-2025-474d-88ca-3108bfb85f87,Seshank Padarthi,712020:518c4693-2025-474d-88ca-3108bfb85f87,28/Oct/26 10:36 AM,28/Oct/26 10:37 AM,28/Oct/26 10:40 AM,,,0,"As a registered user, I want a simple and user-friendly login page so that I can enter my credentials and access the application.
+
+Scope:
+
+* Design the login page layout.
+* Add email or username and password fields.
+* Add a Login button.
+* Include input validation and error message areas.
+* Add a link to the registration page.
+* Make the page responsive for desktop and mobile devices.
+
+Acceptance Criteria:
+
+# The page displays the required login fields.
+# Each field has a clear label.
+# The Login button is visible and usable.
+# Empty or invalid inputs receive appropriate feedback.
+# A link to the registration page is available.
+# The layout works on desktop and mobile screens.
+# The interface can be connected to the User Login functionality.",,Seshank Padarthi,712020:518c4693-2025-474d-88ca-3108bfb85f87,,,,,,,,,,,ApprovalsCFValue{approvals=[]},,,,{},,,,,,,,,,,,,0|i0001d:d,,,PROJ Sprint 1,,,,,,,,,,,,,,,,,,To Do,28/Oct/26 10:36 AM
+Home Page UI,PROJ-9,10045,Story,To Do,PROJ,Proj1,software,Seshank Padarthi,712020:518c4693-2025-474d-88ca-3108bfb85f87,,Medium,,,,Seshank Padarthi,712020:518c4693-2025-474d-88ca-3108bfb85f87,Seshank Padarthi,712020:518c4693-2025-474d-88ca-3108bfb85f87,28/Oct/26 10:35 AM,28/Oct/26 10:36 AM,,,,0,"As a user, I want a clear and user-friendly home page so that I can easily navigate the application's main features.
+
+Scope:
+
+* Design the home page layout.
+* Display the application name or logo.
+* Add navigation links to the main sections.
+* Include appropriate buttons and links.
+* Make the page responsive for desktop and mobile devices.
+
+Acceptance Criteria:
+
+# The home page displays the application name or logo.
+# Navigation elements are clearly visible.
+# Buttons and links are appropriately positioned.
+# The layout adapts to desktop and mobile screen sizes.
+# The page follows the agreed design.
+# Navigation links direct users to the appropriate pages when available.",,Seshank Padarthi,712020:518c4693-2025-474d-88ca-3108bfb85f87,,,,,,,,,,,ApprovalsCFValue{approvals=[]},,,,{},,,,,,,,,,,,,0|i0001d:9,,,PROJ Sprint 1,,,,,,,,,,,,,,,,,,To Do,28/Oct/26 10:35 AM
+User Login,PROJ-8,10044,Story,To Do,PROJ,Proj1,software,Seshank Padarthi,712020:518c4693-2025-474d-88ca-3108bfb85f87,,Medium,,,,Seshank Padarthi,712020:518c4693-2025-474d-88ca-3108bfb85f87,Seshank Padarthi,712020:518c4693-2025-474d-88ca-3108bfb85f87,28/Oct/26 10:35 AM,28/Oct/26 10:35 AM,,,,0,"As a registered user, I want to log in using my credentials so that I can securely access the application.
+
+Acceptance Criteria:
+
+# Users can log in using valid credentials.
+# Invalid credentials are rejected.
+# An appropriate error message is displayed when login fails.
+# Passwords are verified securely.
+# Successful login establishes an authenticated session or token.
+# Unauthenticated users cannot access protected features.",,Seshank Padarthi,712020:518c4693-2025-474d-88ca-3108bfb85f87,,,,,,,,,,,ApprovalsCFValue{approvals=[]},,,,{},,,,,,,,,,,,,0|i0001d:,,,PROJ Sprint 1,,,,,,,,,,,,,,,,,,To Do,28/Oct/26 10:35 AM
+Create User,PROJ-7,10043,Story,To Do,PROJ,Proj1,software,Seshank Padarthi,712020:518c4693-2025-474d-88ca-3108bfb85f87,,Medium,,,,Seshank Padarthi,712020:518c4693-2025-474d-88ca-3108bfb85f87,Seshank Padarthi,712020:518c4693-2025-474d-88ca-3108bfb85f87,28/Oct/26 10:33 AM,28/Oct/26 10:33 AM,28/Oct/26 10:45 AM,,,0,"As a new user, I want to create an account so that I can access the application's features.
+
+Acceptance Criteria:
+
+# The system accepts valid user registration details.
+# Required fields are validated.
+# A user account is created when the submitted details are valid.
+# Duplicate accounts are rejected with an appropriate error message.
+# Passwords are stored securely using password hashing.
+# Invalid registration requests return meaningful error messages.",,Seshank Padarthi,712020:518c4693-2025-474d-88ca-3108bfb85f87,,,,,,,,,,,ApprovalsCFValue{approvals=[]},,,,{},,,,,,,,,,,,,0|i0001b:,,,PROJ Sprint 1,,,,,,,,,,,,,,,,,,To Do,28/Oct/26 10:33 AM
