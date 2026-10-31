@@ -1,27 +1,50 @@
+
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 
-export default function Register() {
+export default function RegisterPage() {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [message, setMessage] = useState("");
+    const [loading, setLoading] = useState(false);
 
-    async function handleSubmit(event) {
-        event.preventDefault();
+    async function handleSubmit(e) {
+        e.preventDefault();
 
-        const response = await fetch("/api/register", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ name, email, password }),
-        });
+        setLoading(true);
 
-        const data = await response.json();
-        setMessage(data.message);
+        try {
+            const response = await fetch("/api/register", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    name,
+                    email,
+                    password
+                })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                alert(data.error || "Registration failed");
+                return;
+            }
+
+            alert("Registration successful. Please log in.");
+
+            // Redirect to login
+            window.location.href = "/login";
+
+        } catch (error) {
+            console.error(error);
+            alert("Could not connect to server");
+        } finally {
+            setLoading(false);
+        }
     }
 
     return (
@@ -30,42 +53,45 @@ export default function Register() {
 
             <form onSubmit={handleSubmit}>
                 <div>
-                    <label htmlFor="name">Name: </label>
+                    <label>Name</label>
                     <input
-                        id="name"
+                        type="text"
                         value={name}
-                        onChange={(e) => setName(e.target.value)}
+                        onChange={e => setName(e.target.value)}
                         required
                     />
                 </div>
 
                 <div>
-                    <label htmlFor="email">Email: </label>
+                    <label>Email</label>
                     <input
-                        id="email"
                         type="email"
                         value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        onChange={e => setEmail(e.target.value)}
                         required
                     />
                 </div>
 
                 <div>
-                    <label htmlFor="password">Password: </label>
+                    <label>Password</label>
                     <input
-                        id="password"
                         type="password"
                         value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        onChange={e => setPassword(e.target.value)}
                         required
                     />
                 </div>
 
-                <button type="submit">Register</button>
+                <button type="submit" disabled={loading}>
+                    {loading ? "Registering..." : "Register"}
+                </button>
             </form>
 
-            <p>{message}</p>
-            <Link href="/">Home</Link>
+            <p>
+                Already have an account?
+                {" "}
+                <a href="/login">Login</a>
+            </p>
         </main>
     );
 }
