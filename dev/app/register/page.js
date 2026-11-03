@@ -50,8 +50,9 @@ export default function RegisterPage() {
     return (
         <main>
             <h1>Register</h1>
+            <p className="page-subtitle">Create an account to get started.</p>
 
-            <form onSubmit={handleSubmit}>
+            <form className="form-card" onSubmit={handleSubmit}>
                 <div>
                     <label>Name</label>
                     <input

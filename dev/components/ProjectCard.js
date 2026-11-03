@@ -3,7 +3,7 @@ import TaskRedirectCard from "./TaskRedirectCard";
 
 export default function ProjectCard({ project }) {
     return (
-        <div>
+        <div className="card">
             <h2>{project.name}</h2>
             <p>{project.description}</p>
 

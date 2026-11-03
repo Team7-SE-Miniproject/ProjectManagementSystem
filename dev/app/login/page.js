@@ -52,8 +52,9 @@ export default function LoginPage() {
     return (
         <main>
             <h1>Login</h1>
+            <p className="page-subtitle">Sign in to continue.</p>
 
-            <form onSubmit={handleSubmit}>
+            <form className="form-card" onSubmit={handleSubmit}>
                 <div>
                     <label>Email</label>
                     <input

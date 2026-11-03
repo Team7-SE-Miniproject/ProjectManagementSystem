@@ -37,7 +37,7 @@ export default function AddTaskToProject({
     }
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form className="form-card" onSubmit={handleSubmit}>
             <h2>Add task to project</h2>
 
             <input

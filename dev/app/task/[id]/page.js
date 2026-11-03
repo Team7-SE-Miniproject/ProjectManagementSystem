@@ -91,7 +91,7 @@ export default function TaskPage({ params }) {
         <main>
             <ProjectRedirectCard project={data.project} />
 
-            <TaskCard task={task} />
+            <TaskCard task={task} user={user} />
 
             {canAddUsers && (
                 <AddUserToTask

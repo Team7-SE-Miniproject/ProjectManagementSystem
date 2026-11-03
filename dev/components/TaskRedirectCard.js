@@ -5,7 +5,7 @@ export default function TaskRedirectCard({ task }) {
     if (!task) return <p>No task assigned.</p>;
 
     return (
-        <Link href={`/task/${task.task_id}`}>
+        <Link className="card-link" href={`/task/${task.task_id}`}>
             <div>{task.title}</div>
         </Link>
     );

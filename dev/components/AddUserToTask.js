@@ -29,7 +29,7 @@ export default function AddUserToTask({ user, task, availableUsers }) {
     }
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form className="form-card" onSubmit={handleSubmit}>
             <h2>Add user to task</h2>
 
             <select

@@ -66,9 +66,8 @@ export default function DashboardPage() {
     return (
         <main>
             <h1>Dashboard</h1>
+            <p className="page-subtitle">Welcome back, {user.name}. <span className="status">{user.role}</span></p>
 
-            <p>Welcome, {user.name}</p>
-            <p>Role: {user.role}</p>
 
             {/* DEFAULT USER */}
             {user.role === "default" && (
@@ -92,7 +91,7 @@ export default function DashboardPage() {
 
                     {data.task && (
                         <>
-                            <TaskCard task={data.task} />
+                            <TaskCard task={data.task} user={user} />
 
                             <AddUserToTask
                                 user={user}
