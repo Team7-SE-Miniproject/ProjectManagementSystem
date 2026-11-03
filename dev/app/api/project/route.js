@@ -1,8 +1,10 @@
+
 import { NextResponse } from "next/server";
 import pool from "@/lib/db";
 
 export async function POST(request) {
     const client = await pool.connect();
+    let transactionStarted = false;
 
     try {
         const {
@@ -12,9 +14,17 @@ export async function POST(request) {
             description
         } = await request.json();
 
-        await client.query("BEGIN");
+        if (!user_id || !manager_id || !name?.trim()) {
+            return NextResponse.json(
+                { error: "Missing required fields" },
+                { status: 400 }
+            );
+        }
 
-        // Verify that the requester is an admin.
+        await client.query("BEGIN");
+        transactionStarted = true;
+
+        // Verify requester is an admin.
         const adminResult = await client.query(
             `SELECT role
              FROM users
@@ -26,47 +36,63 @@ export async function POST(request) {
             throw new Error("Only admins can create projects");
         }
 
-        // Check that the selected user is completely unassigned.
+        // Verify selected user is an unassigned default user.
         const managerResult = await client.query(
             `SELECT user_id
              FROM users
              WHERE user_id = $1
-             AND project_id = 0
-             AND task_id = 0
+               AND role = 'default'
+               AND project_id = 0
+               AND task_id = 0
              FOR UPDATE`,
             [manager_id]
         );
 
         if (managerResult.rowCount === 0) {
-            throw new Error("Selected user is invalid or already assigned");
+            throw new Error(
+                "Selected user is invalid or already assigned"
+            );
         }
 
-        // Create the project.
+        // Create project.
         const projectResult = await client.query(
             `INSERT INTO projects (name, description)
              VALUES ($1, $2)
              RETURNING *`,
-            [name, description || null]
+            [name.trim(), description || null]
         );
 
         const project = projectResult.rows[0];
 
-        // Assign the selected user as project manager.
-        await client.query(
+        // Assign selected user as project manager.
+        const updateResult = await client.query(
             `UPDATE users
              SET role = 'project manager',
                  project_id = $1,
                  task_id = 0
-             WHERE user_id = $2`,
+             WHERE user_id = $2
+               AND role = 'default'
+               AND project_id = 0
+               AND task_id = 0
+             RETURNING user_id`,
             [project.project_id, manager_id]
         );
 
+        if (updateResult.rowCount === 0) {
+            throw new Error("Could not assign project manager");
+        }
+
         await client.query("COMMIT");
+        transactionStarted = false;
 
         return NextResponse.json({ project });
 
     } catch (error) {
-        await client.query("ROLLBACK");
+        if (transactionStarted) {
+            await client.query("ROLLBACK");
+        }
+
+        console.error("Create project error:", error);
 
         return NextResponse.json(
             { error: error.message || "Could not create project" },

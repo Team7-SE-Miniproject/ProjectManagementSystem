@@ -2,13 +2,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 
 import ProjectCard from "@/components/ProjectCard";
 import AddTaskToProject from "@/components/AddTaskToProject";
 
-export default function ProjectPage({ params }) {
+export default function ProjectPage() {
+    const params = useParams();
+    const id = params.id;
+
     const [data, setData] = useState(null);
-    const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -22,24 +25,7 @@ export default function ProjectPage({ params }) {
                 }
 
                 const currentUser = JSON.parse(storedUser);
-                const { id } = await params;
 
-                // Fetch the current user and available managers.
-                const dashboardResponse = await fetch(
-                    `/api/dashboard?user_id=${currentUser.user_id}`,
-                    { cache: "no-store" }
-                );
-
-                const dashboardData = await dashboardResponse.json();
-
-                if (!dashboardResponse.ok) {
-                    throw new Error(dashboardData.error);
-                }
-
-                // Use the database version of the user, not sessionStorage.
-                setUser(dashboardData.user);
-
-                // Fetch project details.
                 const response = await fetch(
                     `/api/project/${id}?user_id=${currentUser.user_id}`,
                     { cache: "no-store" }
@@ -51,42 +37,46 @@ export default function ProjectPage({ params }) {
                     throw new Error(result.error);
                 }
 
-                setData({
-                    ...result,
-                    availableManagers:
-                        dashboardData.availableManagers || []
-                });
+                setData(result);
 
             } catch (error) {
                 console.error("Project loading error:", error);
                 alert(error.message || "Could not load project");
+
             } finally {
                 setLoading(false);
             }
         }
 
         loadProject();
-    }, [params]);
+    }, [id]);
 
-    if (loading) return <p>Loading project...</p>;
-    if (!data || !user) return <p>Project unavailable.</p>;
+    if (loading) {
+        return <p>Loading project...</p>;
+    }
+
+    if (!data) {
+        return <p>Could not load project.</p>;
+    }
+
+    const { user, project, availableManagers } = data;
 
     const canAddTask =
         user.role === "admin" ||
         (
             user.role === "project manager" &&
-            Number(user.project_id) === Number(data.project.project_id)
+            Number(user.project_id) === Number(project.project_id)
         );
 
     return (
         <main>
-            <ProjectCard project={data.project} />
+            <ProjectCard project={project} />
 
             {canAddTask && (
                 <AddTaskToProject
                     user={user}
-                    project={data.project}
-                    managers={data.availableManagers}
+                    project={project}
+                    managers={availableManagers || []}
                 />
             )}
         </main>

@@ -1,23 +1,29 @@
-export default function TaskCard({ task }) {
-    if (!task) return null;
 
+export default function TaskCard({ task }) {
     return (
         <div>
             <h2>{task.title}</h2>
+
             <p>{task.description}</p>
-            <p>Status: {task.status || "Not set"}</p>
 
-            <h3>Task manager</h3>
-            <p>{task.manager?.name || "Not assigned"}</p>
+            <p>Status: {task.status}</p>
 
-            <h3>Assigned users</h3>
+            <h3>Task Manager</h3>
 
-            {task.users?.length > 0 ? (
-                task.users.map(user => (
+            {task.manager ? (
+                <p>{task.manager.name}</p>
+            ) : (
+                <p>No task manager assigned.</p>
+            )}
+
+            <h3>Assigned Users</h3>
+
+            {task.assignedUsers?.length > 0 ? (
+                task.assignedUsers.map(user => (
                     <p key={user.user_id}>{user.name}</p>
                 ))
             ) : (
-                <p>No users assigned.</p>
+                <p>No users assigned yet.</p>
             )}
         </div>
     );

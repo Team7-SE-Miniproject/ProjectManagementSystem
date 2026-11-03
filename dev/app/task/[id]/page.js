@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -22,10 +23,23 @@ export default function TaskPage({ params }) {
                 }
 
                 const currentUser = JSON.parse(storedUser);
-                setUser(currentUser);
-
                 const { id } = await params;
 
+                // Get the latest user information from the database.
+                const dashboardResponse = await fetch(
+                    `/api/dashboard?user_id=${currentUser.user_id}`,
+                    { cache: "no-store" }
+                );
+
+                const dashboardData = await dashboardResponse.json();
+
+                if (!dashboardResponse.ok) {
+                    throw new Error(dashboardData.error);
+                }
+
+                setUser(dashboardData.user);
+
+                // Get task details.
                 const response = await fetch(
                     `/api/task/${id}?user_id=${currentUser.user_id}`,
                     { cache: "no-store" }
@@ -34,7 +48,9 @@ export default function TaskPage({ params }) {
                 const result = await response.json();
 
                 if (!response.ok) {
-                    throw new Error(result.error || "Could not load task");
+                    throw new Error(
+                        result.error || "Could not load task"
+                    );
                 }
 
                 setData(result);
@@ -55,17 +71,21 @@ export default function TaskPage({ params }) {
 
     const task = data.task;
 
-    // Show the add-user form only to users who are allowed to manage this task.
+    // Admin can manage any task.
+    const isAdmin = user.role === "admin";
+
+    // Project manager can manage tasks in their project.
+    const isProjectManager =
+        user.role === "project manager" &&
+        Number(user.project_id) === Number(task.project_id);
+
+    // Task manager can manage their assigned task.
+    const isTaskManager =
+        user.role === "task manager" &&
+        Number(user.task_id) === Number(task.task_id);
+
     const canAddUsers =
-        user.role === "admin" ||
-        (
-            user.role === "project manager" &&
-            Number(user.project_id) === Number(task.project_id)
-        ) ||
-        (
-            user.role === "task manager" &&
-            Number(user.task_id) === Number(task.task_id)
-        );
+        isAdmin || isProjectManager || isTaskManager;
 
     return (
         <main>

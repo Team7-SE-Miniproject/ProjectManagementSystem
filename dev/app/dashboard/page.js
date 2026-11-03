@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -11,10 +12,9 @@ import AddProject from "@/components/AddProject";
 import AddTaskToProject from "@/components/AddTaskToProject";
 import AddUserToTask from "@/components/AddUserToTask";
 
-export default function Dashboard() {
+export default function DashboardPage() {
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState("");
 
     useEffect(() => {
         async function loadDashboard() {
@@ -26,29 +26,25 @@ export default function Dashboard() {
                     return;
                 }
 
-                const user = JSON.parse(storedUser);
+                const currentUser = JSON.parse(storedUser);
 
                 const response = await fetch(
-                    `/api/dashboard?user_id=${encodeURIComponent(user.user_id)}`,
-                    {
-                        method: "GET",
-                        cache: "no-store"
-                    }
+                    `/api/dashboard?user_id=${currentUser.user_id}`,
+                    { cache: "no-store" }
                 );
 
                 const result = await response.json();
 
                 if (!response.ok) {
-                    throw new Error(
-                        result.error || `Request failed: ${response.status}`
-                    );
+                    throw new Error(result.error);
                 }
 
                 setData(result);
 
-            } catch (err) {
-                console.error("Dashboard error:", err);
-                setError(err.message || "Could not load dashboard");
+            } catch (error) {
+                console.error("Dashboard error:", error);
+                alert(error.message || "Could not load dashboard");
+
             } finally {
                 setLoading(false);
             }
@@ -61,10 +57,6 @@ export default function Dashboard() {
         return <p>Loading dashboard...</p>;
     }
 
-    if (error) {
-        return <p>Dashboard error: {error}</p>;
-    }
-
     if (!data) {
         return <p>Could not load dashboard.</p>;
     }
@@ -73,64 +65,70 @@ export default function Dashboard() {
 
     return (
         <main>
-            <h1>Welcome, {user.name}</h1>
+            <h1>Dashboard</h1>
+
+            <p>Welcome, {user.name}</p>
             <p>Role: {user.role}</p>
 
-            {/* Default user */}
+            {/* DEFAULT USER */}
             {user.role === "default" && (
                 <>
-                    <h2>Your project</h2>
-                    <ProjectRedirectCard project={data.project} />
-
-                    <h2>Your task</h2>
-                    <TaskRedirectCard task={data.task} />
-                </>
-            )}
-
-            {/* Task manager */}
-            {user.role === "task manager" && (
-                <>
-                    <h2>Your project</h2>
-                    <ProjectRedirectCard project={data.project} />
-
-                    <h2>Your task</h2>
-                    <TaskCard task={data.task} />
+                    {data.project && (
+                        <ProjectRedirectCard project={data.project} />
+                    )}
 
                     {data.task && (
-                        <AddUserToTask
-                            user={user}
-                            task={data.task}
-                            availableUsers={data.availableUsers || []}
-                        />
+                        <TaskRedirectCard task={data.task} />
                     )}
                 </>
             )}
 
-            {/* Project manager */}
+            {/* TASK MANAGER */}
+            {user.role === "task manager" && (
+                <>
+                    {data.project && (
+                        <ProjectRedirectCard project={data.project} />
+                    )}
+
+                    {data.task && (
+                        <>
+                            <TaskCard task={data.task} />
+
+                            <AddUserToTask
+                                user={user}
+                                task={data.task}
+                                availableUsers={data.availableUsers || []}
+                            />
+                        </>
+                    )}
+                </>
+            )}
+
+            {/* PROJECT MANAGER */}
             {user.role === "project manager" && (
                 <>
-                    <ProjectCard
-                        project={{
-                            ...data.project,
-                            tasks: data.tasks || []
-                        }}
-                    />
-
                     {data.project && (
-                        <AddTaskToProject
-                            user={user}
-                            project={data.project}
-                            managers={data.availableManagers || []}
-                        />
+                        <>
+                            <ProjectCard
+                                project={{
+                                    ...data.project,
+                                    tasks: data.tasks || []
+                                }}
+                            />
+
+                            <AddTaskToProject
+                                user={user}
+                                project={data.project}
+                                managers={data.availableManagers || []}
+                            />
+                        </>
                     )}
                 </>
             )}
 
-            {/* Admin */}
+            {/* ADMIN */}
             {user.role === "admin" && (
                 <>
-                    <h2>All projects</h2>
-
                     {(data.projects || []).map(project => (
                         <ProjectRedirectCard
                             key={project.project_id}

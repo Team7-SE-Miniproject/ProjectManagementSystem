@@ -1,8 +1,10 @@
+
 import { NextResponse } from "next/server";
 import pool from "@/lib/db";
 
 export async function POST(request) {
     const client = await pool.connect();
+    let transactionStarted = false;
 
     try {
         const {
@@ -13,13 +15,22 @@ export async function POST(request) {
             description
         } = await request.json();
 
-        if (!user_id || !project_id || !manager_id || !title?.trim()) {
-            throw new Error("User, project, task manager, and task title are required");
+        if (
+            !user_id ||
+            !project_id ||
+            !manager_id ||
+            !title?.trim()
+        ) {
+            return NextResponse.json(
+                { error: "Missing required fields" },
+                { status: 400 }
+            );
         }
 
         await client.query("BEGIN");
+        transactionStarted = true;
 
-        // Only an admin or the project manager assigned to this project can add tasks.
+        // Get requester.
         const requesterResult = await client.query(
             `SELECT role, project_id
              FROM users
@@ -29,6 +40,7 @@ export async function POST(request) {
 
         const requester = requesterResult.rows[0];
 
+        // Check permissions.
         const allowed =
             requester?.role === "admin" ||
             (
@@ -37,25 +49,30 @@ export async function POST(request) {
             );
 
         if (!allowed) {
-            throw new Error("Only an admin or this project's project manager can add tasks");
+            throw new Error(
+                "You cannot create tasks in this project"
+            );
         }
 
-        // Lock and verify that the selected user is completely unassigned.
+        // Verify selected user is an unassigned default user.
         const managerResult = await client.query(
             `SELECT user_id
              FROM users
              WHERE user_id = $1
-             AND project_id = 0
-             AND task_id = 0
+               AND role = 'default'
+               AND project_id = 0
+               AND task_id = 0
              FOR UPDATE`,
             [manager_id]
         );
 
         if (managerResult.rowCount === 0) {
-            throw new Error("Selected user is invalid or already assigned");
+            throw new Error(
+                "Selected user is invalid or already assigned"
+            );
         }
 
-        // Create the task.
+        // Create task.
         const taskResult = await client.query(
             `INSERT INTO tasks
                 (title, description, status, project_id)
@@ -71,29 +88,35 @@ export async function POST(request) {
 
         const task = taskResult.rows[0];
 
-        // The selected user becomes the task manager.
-        const assignmentResult = await client.query(
+        // Assign selected user as task manager.
+        const updateResult = await client.query(
             `UPDATE users
              SET role = 'task manager',
                  project_id = $1,
                  task_id = $2
              WHERE user_id = $3
-             AND project_id = 0
-             AND task_id = 0
+               AND role = 'default'
+               AND project_id = 0
+               AND task_id = 0
              RETURNING user_id`,
             [project_id, task.task_id, manager_id]
         );
 
-        if (assignmentResult.rowCount === 0) {
-            throw new Error("Selected user was assigned elsewhere; please try again");
+        if (updateResult.rowCount === 0) {
+            throw new Error("Could not assign task manager");
         }
 
         await client.query("COMMIT");
+        transactionStarted = false;
 
         return NextResponse.json({ task });
 
     } catch (error) {
-        await client.query("ROLLBACK");
+        if (transactionStarted) {
+            await client.query("ROLLBACK");
+        }
+
+        console.error("Create task error:", error);
 
         return NextResponse.json(
             { error: error.message || "Could not create task" },

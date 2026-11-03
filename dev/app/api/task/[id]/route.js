@@ -1,10 +1,10 @@
+
 import { NextResponse } from "next/server";
 import pool from "@/lib/db";
 
 export async function GET(request, { params }) {
     try {
         const { id } = await params;
-
         const { searchParams } = new URL(request.url);
         const user_id = searchParams.get("user_id");
 
@@ -15,7 +15,7 @@ export async function GET(request, { params }) {
             );
         }
 
-        // Get requester from the database.
+        // Get requester.
         const requesterResult = await pool.query(
             `SELECT user_id, role, project_id, task_id
              FROM users
@@ -49,8 +49,7 @@ export async function GET(request, { params }) {
             );
         }
 
-        // Only admin, this project's project manager, or this task's task manager
-        // can access the task management page.
+        // Check access.
         const allowed =
             requester.role === "admin" ||
             (
@@ -58,22 +57,29 @@ export async function GET(request, { params }) {
                 Number(requester.project_id) === Number(task.project_id)
             ) ||
             (
-                requester.role === "task manager" &&
-                Number(requester.task_id) === Number(task.task_id)
-            ) ||
-            (
-                requester.role === "default" &&
                 Number(requester.project_id) === Number(task.project_id) &&
                 Number(requester.task_id) === Number(task.task_id)
             );
 
         if (!allowed) {
             return NextResponse.json(
-                { error: "Access denied" },
+                { error: "You cannot access this task" },
                 { status: 403 }
             );
         }
 
+        // Get task manager.
+        const managerResult = await pool.query(
+            `SELECT user_id, name, email
+             FROM users
+             WHERE task_id = $1
+               AND role = 'task manager'`,
+            [task.task_id]
+        );
+
+        task.manager = managerResult.rows[0] || null;
+
+        // Get project.
         const projectResult = await pool.query(
             `SELECT *
              FROM projects
@@ -81,33 +87,24 @@ export async function GET(request, { params }) {
             [task.project_id]
         );
 
-        const assignedUsersResult = await pool.query(
-            `SELECT user_id, name, email, role
-             FROM users
-             WHERE project_id = $1
-             AND task_id = $2
-             ORDER BY user_id`,
-            [task.project_id, task.task_id]
-        );
-
+        // Get available default users.
         const availableUsersResult = await pool.query(
             `SELECT user_id, name
              FROM users
-             WHERE project_id = 0
-             AND task_id = 0
+             WHERE role = 'default'
+               AND project_id = 0
+               AND task_id = 0
              ORDER BY name`
         );
 
-        task.assignedUsers = assignedUsersResult.rows;
-
         return NextResponse.json({
-            project: projectResult.rows[0] || null,
             task,
+            project: projectResult.rows[0] || null,
             availableUsers: availableUsersResult.rows
         });
 
     } catch (error) {
-        console.error("Task API error:", error);
+        console.error("Get task error:", error);
 
         return NextResponse.json(
             { error: "Could not load task" },

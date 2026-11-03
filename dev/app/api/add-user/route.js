@@ -1,8 +1,10 @@
+
 import { NextResponse } from "next/server";
 import pool from "@/lib/db";
 
 export async function POST(request) {
     const client = await pool.connect();
+    let transactionStarted = false;
 
     try {
         const {
@@ -12,12 +14,16 @@ export async function POST(request) {
         } = await request.json();
 
         if (!user_id || !task_id || !selected_user_id) {
-            throw new Error("Requester, task, and selected user are required");
+            return NextResponse.json(
+                { error: "Missing required fields" },
+                { status: 400 }
+            );
         }
 
         await client.query("BEGIN");
+        transactionStarted = true;
 
-        // Get the requester's current role and assignment from the database.
+        // Get requester.
         const requesterResult = await client.query(
             `SELECT role, project_id, task_id
              FROM users
@@ -28,12 +34,12 @@ export async function POST(request) {
         const requester = requesterResult.rows[0];
 
         if (!requester) {
-            throw new Error("User not found");
+            throw new Error("Requester not found");
         }
 
-        // Get the target task.
+        // Get task.
         const taskResult = await client.query(
-            `SELECT *
+            `SELECT task_id, project_id
              FROM tasks
              WHERE task_id = $1`,
             [task_id]
@@ -45,9 +51,7 @@ export async function POST(request) {
             throw new Error("Task not found");
         }
 
-        // Admin can add users to any task.
-        // Project manager can add users only to tasks in their project.
-        // Task manager can add users only to their own task.
+        // Check permissions.
         const allowed =
             requester.role === "admin" ||
             (
@@ -60,34 +64,40 @@ export async function POST(request) {
             );
 
         if (!allowed) {
-            throw new Error("You cannot add users to this task");
+            throw new Error(
+                "You cannot add users to this task"
+            );
         }
 
-        // Lock and verify the selected user is completely unassigned.
-        const selectedCheck = await client.query(
+        // Verify selected user is an unassigned default user.
+        const selectedUserResult = await client.query(
             `SELECT user_id
              FROM users
              WHERE user_id = $1
-             AND project_id = 0
-             AND task_id = 0
+               AND role = 'default'
+               AND project_id = 0
+               AND task_id = 0
              FOR UPDATE`,
             [selected_user_id]
         );
 
-        if (selectedCheck.rowCount === 0) {
-            throw new Error("Selected user is invalid or already assigned");
+        if (selectedUserResult.rowCount === 0) {
+            throw new Error(
+                "Selected user is invalid or already assigned"
+            );
         }
 
-        // Assign the user to the task as a regular user.
-        const selectedResult = await client.query(
+        // Assign selected user to the task.
+        const updateResult = await client.query(
             `UPDATE users
              SET role = 'default',
                  project_id = $1,
                  task_id = $2
              WHERE user_id = $3
-             AND project_id = 0
-             AND task_id = 0
-             RETURNING user_id, name, email, role`,
+               AND role = 'default'
+               AND project_id = 0
+               AND task_id = 0
+             RETURNING user_id, name, role, project_id, task_id`,
             [
                 task.project_id,
                 task.task_id,
@@ -95,22 +105,27 @@ export async function POST(request) {
             ]
         );
 
-        if (selectedResult.rowCount === 0) {
-            throw new Error("Selected user was assigned elsewhere; please try again");
+        if (updateResult.rowCount === 0) {
+            throw new Error("Could not assign user to task");
         }
 
         await client.query("COMMIT");
+        transactionStarted = false;
 
         return NextResponse.json({
-            message: "User assigned successfully",
-            user: selectedResult.rows[0]
+            message: "User added to task successfully",
+            user: updateResult.rows[0]
         });
 
     } catch (error) {
-        await client.query("ROLLBACK");
+        if (transactionStarted) {
+            await client.query("ROLLBACK");
+        }
+
+        console.error("Add user error:", error);
 
         return NextResponse.json(
-            { error: error.message || "Could not assign user" },
+            { error: error.message || "Could not add user to task" },
             { status: 400 }
         );
 

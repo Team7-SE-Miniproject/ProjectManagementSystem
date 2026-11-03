@@ -1,3 +1,4 @@
+
 import { NextResponse } from "next/server";
 import pool from "@/lib/db";
 
@@ -13,7 +14,7 @@ export async function GET(request) {
             );
         }
 
-        // Get user
+        // Get current user.
         const userResult = await pool.query(
             `SELECT user_id, name, email, role, project_id, task_id
              FROM users
@@ -30,16 +31,17 @@ export async function GET(request) {
             );
         }
 
-        // Get every completely unassigned user.
-        const availableResult = await pool.query(
+        // Available users for ALL Add cards.
+        const availableUsersResult = await pool.query(
             `SELECT user_id, name
              FROM users
-             WHERE project_id = 0
-             AND task_id = 0
+             WHERE role = 'default'
+               AND project_id = 0
+               AND task_id = 0
              ORDER BY name`
         );
 
-        const availableUsers = availableResult.rows;
+        const availableUsers = availableUsersResult.rows;
 
         // DEFAULT USER
         if (user.role === "default") {
@@ -76,8 +78,9 @@ export async function GET(request) {
             const taskResult = await pool.query(
                 `SELECT *
                  FROM tasks
-                 WHERE task_id = $1`,
-                [user.task_id]
+                 WHERE task_id = $1
+                   AND project_id = $2`,
+                [user.task_id, user.project_id]
             );
 
             const task = taskResult.rows[0] || null;
@@ -87,8 +90,10 @@ export async function GET(request) {
                     `SELECT user_id, name, email, role
                      FROM users
                      WHERE project_id = $1
-                     AND task_id = $2`,
-                    [task.project_id, task.task_id]
+                       AND task_id = $2
+                       AND user_id != $3
+                     ORDER BY name`,
+                    [user.project_id, user.task_id, user.user_id]
                 );
 
                 task.assignedUsers = assignedUsersResult.rows;
@@ -111,26 +116,18 @@ export async function GET(request) {
                 [user.project_id]
             );
 
-            const project = projectResult.rows[0] || null;
-
-            let tasks = [];
-
-            if (project) {
-                const tasksResult = await pool.query(
-                    `SELECT *
-                     FROM tasks
-                     WHERE project_id = $1
-                     ORDER BY task_id`,
-                    [project.project_id]
-                );
-
-                tasks = tasksResult.rows;
-            }
+            const tasksResult = await pool.query(
+                `SELECT *
+                 FROM tasks
+                 WHERE project_id = $1
+                 ORDER BY task_id`,
+                [user.project_id]
+            );
 
             return NextResponse.json({
                 user,
-                project,
-                tasks,
+                project: projectResult.rows[0] || null,
+                tasks: tasksResult.rows,
                 availableManagers: availableUsers
             });
         }
