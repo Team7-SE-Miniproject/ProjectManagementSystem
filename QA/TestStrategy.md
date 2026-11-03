@@ -9,7 +9,7 @@
 | Prepared by | Nidhi Raghuraman |
 | Role | QA / Test Lead |
 | Team | Team 7 |
-| Date | 03 November 2026 |
+| Date | 26th October 2026 |
 | Status | Draft – Pending Team Review |
 
 ---
