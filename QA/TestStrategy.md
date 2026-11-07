@@ -10,7 +10,7 @@
 | Role | QA / Test Lead |
 | Team | Team 7 |
 | Date | 26th October 2026 |
-| Status | Draft – Pending Team Review |
+| Status | Draft – 1st review done |
 
 ---
 
