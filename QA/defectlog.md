@@ -7,7 +7,7 @@
 | Version | 1.0 |
 | Prepared by | Nidhi Raghuraman |
 | Role | QA / Test Lead |
-| Date | 01 November 2026 |
+| Date | 02 November 2026 |
 | Status | Active – Awaiting Test Execution |
 
 ## 1. Purpose
