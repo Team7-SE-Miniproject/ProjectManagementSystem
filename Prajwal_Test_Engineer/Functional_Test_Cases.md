@@ -41,4 +41,4 @@ To verify the functional correctness of authentication, project management, and 
 | Blocked          |     0 |
 | Not Run          |    14 |
 
-**Note:** All test cases are prepared. Execution is pending application availability. Actual results and statuses will be updated after testing.
+**Note:** All test cases are prepared. Execution is pending application availability. Actual results and statuses will be updated after testing..
