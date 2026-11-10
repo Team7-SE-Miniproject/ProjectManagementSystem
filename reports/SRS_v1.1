@@ -1,0 +1,150 @@
+Software Requirements Specification
+Project Management System (PMS)
+Software Engineering Mini-Project – Team 7
+Version	1.1
+Revision date	8 November 2026
+Status	Updated draft for team review and instructor approval
+Baseline	Original approved/submitted v1.0 documents; requirement IDs retained
+
+Revision control note: This v1.1 document clarifies and expands the v1.0 baseline. It is not formally approved until the team/instructor completes the approval fields. It does not claim that a feature, test, diagram, API, or deployment has been implemented unless supported by repository evidence.
+ 
+Revision history
+Version	Date	Author	Change summary	Approval
+1.0	06-09-2026	Team 7	Initial requirements baseline.	As recorded in original.
+1.1	8-11-2026	Team 7; revision coordinated by QA Lead	Clarified acceptance criteria, role terminology, security requirements and RTM; no original requirement IDs removed.	Pending team/instructor approval.
+
+Approvals
+Role	Name	Signature / email	Date
+QA/Test Lead	PES2UG24CS315 – Nidhi Raghuraman	Pending	Pending
+Project Manager	PES2UG24CS336 – Padarthi Seshank	Pending	Pending
+Developer	PES2UG24CS356 – Prabhanjana P Hegde	Pending	Pending
+Test Engineer	PES2UG24CS360 – Prajwal R	Pending	Pending
+Course Coordinator	To be completed	Pending	Pending
+
+1. Introduction
+1.1 Purpose
+This Software Requirements Specification defines the functional and non-functional requirements for the web-based Project Management System. It is the reference for implementation, testing, acceptance and change control.
+1.2 Scope
+The PMS supports user registration and login, profile management, project creation and membership, task creation and assignment, task status/priority/deadline management, and project progress monitoring.
+1.3 Audience
+Developers, QA/Test Lead, Test Engineer, Project Manager, project users and course evaluators.
+1.4 Definitions
+PMS – Project Management System; UI – User Interface; DB – Database; API – Application Programming Interface; RBAC – Role-Based Access Control; RTM – Requirements Traceability Matrix; SRS – Software Requirements Specification; SAD – Software Architecture and Design Specification; STP – Software Test Plan.
+1.5 Revision and baseline note
+Version 1.1 preserves the v1.0 requirement identifiers and expands their acceptance criteria and traceability. It also records a proposed sprint recovery schedule. The schedule change requires team/instructor confirmation; historical dates must not be backdated.
+2. Overall description
+2.1 Product perspective
+The PMS is a browser-based web application with a presentation layer, server-side application/API logic and PostgreSQL data storage. The documented technology baseline is Next.js, Node.js and PostgreSQL. The exact repository implementation must be checked before sign-off.
+2.2 Major functions
+•	Register users and authenticate login/logout.
+•	Manage the authenticated user's own profile.
+•	Create, view and update project details according to permissions.
+•	Add members to projects and restrict project visibility by membership/authorization.
+•	Create tasks, assign tasks to valid project users and view assigned tasks.
+•	Update task status and manage priority/deadline information.
+•	Calculate and display project progress based on completed tasks.
+•	Enforce authentication, authorization, input validation and secure communication.
+2.3 User roles and permissions
+Role	Intended responsibility
+Administrator	Create projects, manage project details and add project members.
+Project Manager	Create tasks and set/update task priority and deadlines within authorized projects.
+Task Manager	Assign tasks to valid project users and manage permitted assignment operations.
+Project member / authenticated user	View only authorized projects/tasks, view assigned tasks, update permitted task status and edit own profile.
+
+Role clarification: the original SRS names Administrator, Project Manager and Task Manager; the original SAD also describes a basic User role. This revision uses “project member/authenticated user” for basic participant behavior. The team must confirm this mapping and keep it consistent across implementation, Jira, SAD and tests.
+2.4 Operating environment and constraints
+•	Client: modern web browser on Windows, Linux or macOS.
+•	Application/runtime: Next.js and Node.js as the documented baseline.
+•	Database: PostgreSQL.
+•	HTTP may be used in local development as configured; deployed traffic carrying credentials/protected data must use HTTPS.
+•	Project/task information must not be exposed to users without authorization.
+•	Use dummy/test data in screenshots and test evidence; do not commit credentials or secrets.
+3. External interface requirements
+3.1 User interface
+Expected interfaces include login/registration, dashboard, project list/details, task list/details, profile functions and project progress information. Screens should provide understandable validation and error feedback and reflect user permissions.
+3.2 Software interfaces
+The documented baseline is a Next.js application using server-side route handlers/business logic and PostgreSQL. Exact endpoint paths, payloads and response schemas must match the implementation and be documented in the SAD.
+3.3 Communication
+Browser/server requests use the configured client-server channel. Production/deployed traffic carrying credentials or protected data must use HTTPS.
+4. Functional requirements
+Req ID	Requirement	Priority	Acceptance criteria
+PMS-F-001	Registration and login	High	A user can register with valid required details and log in with correct credentials. Invalid credentials are rejected safely; protected functionality requires authentication.
+PMS-F-002	Profile management	High	An authenticated user can view/update permitted own-profile fields. A user cannot modify another user's profile without separately authorized admin capability.
+PMS-F-003	Administrator creates projects	Medium	An authorized administrator can create a project with valid required details; it is persisted and visible to authorized members.
+PMS-F-004	View projects	High	A user sees only projects they belong to or are otherwise explicitly authorized to access.
+PMS-F-005	Project manager creates tasks	High	An authorized project manager can create a task associated with a project they manage.
+PMS-F-006	Task manager assigns tasks	High	An authorized task manager can assign a task to a valid user permitted to participate in the project.
+PMS-F-007	View assigned tasks	High	A user can view tasks assigned to them.
+PMS-F-008	Update task status	High	An authorized assigned user can update task status; the change persists after reload.
+PMS-F-009	Task priority and deadline	Medium	A task stores/displays priority and deadline; invalid values are rejected or handled according to documented validation rules.
+PMS-F-010	Display project progress	Medium	The system displays project progress based on task completion using the agreed calculation rule.
+PMS-F-011	Manage project details	Medium	An authorized administrator can view/update valid project details; unauthorized changes are rejected.
+PMS-F-012	Add project members	High	An authorized administrator can add a valid user to a project; membership persists and affects authorized visibility.
+PMS-F-013	Project manager sets priority/deadline	Medium	An authorized project manager can set/update task priority and deadline; unauthorized roles cannot change fields they do not control.
+PMS-F-014	View authorized task statuses	Medium	Users can view task statuses only for tasks/projects they are authorized to access.
+PMS-F-015	Progress based on completed tasks	Medium	Project progress is recalculated from task completion using the agreed formula; identical data produces a consistent result.
+
+5. Non-functional requirements
+Req ID	Category	Priority	Acceptance criteria / measurement
+PMS-NF-001	Performance	High	Normal user requests should respond within 3 seconds under normal test conditions. Record environment, sample size and observed times.
+PMS-NF-002	Authorization/security	High	Users cannot access unauthorized projects/tasks. Verify direct URL/API access as well as UI visibility.
+PMS-NF-003	Data consistency	High	Project/task changes persist correctly; invalid references and inconsistent updates are rejected.
+PMS-NF-004	Concurrent use	Medium	Multiple users can use the system without data corruption or significant degradation. Agree a numeric concurrency target before formal load testing.
+PMS-NF-005	Usability	Medium	Users can identify/use main project/task functions with clear labels, validation and error feedback.
+
+5.1 Security requirements
+Req ID	Security requirement	Priority	Acceptance criteria
+PMS-SR-001	Project/task authorization	High	Access is restricted according to user authorization and project membership.
+PMS-SR-002	Authentication before protected functions	High	Unauthenticated requests to protected functions are denied or redirected to login.
+PMS-SR-003	Own-profile modification	High	A user may modify only their own profile unless a separately authorized admin capability is specified.
+PMS-SR-004	Role-based access control	High	Administrator, Project Manager and Task Manager actions follow agreed role permissions; basic member permissions are consistently defined.
+PMS-SR-005	Protected communication	High	Credentials/protected data use HTTPS in deployed environments; secrets are not logged or committed.
+
+6. Quality attributes and acceptance
+•	Registration/login works and invalid credentials are rejected.
+•	Authorized project operations and project membership work correctly.
+•	Authorized task creation, assignment, viewing and status updates work correctly.
+•	Priority, deadlines and progress are stored/displayed consistently.
+•	Unauthorized direct URL/API access is rejected.
+•	Normal-request performance is measured against the 3-second target.
+•	All high-priority requirements have linked tests and implementation/test status is reported honestly.
+7. Requirements Traceability Matrix
+Requirement ID	Area	Test case IDs	Status
+PMS-F-001	Authentication	TC-01, TC-02, TC-03	Planned
+PMS-F-002	User profile	TC-04, TC-13	Planned
+PMS-F-003	Project management	TC-05	Planned
+PMS-F-004	Project visibility	TC-06, TC-13	Planned
+PMS-F-005	Task management	TC-07	Planned
+PMS-F-006	Task assignment	TC-08	Planned
+PMS-F-007	Assigned task view	TC-09	Planned
+PMS-F-008	Task status	TC-10	Planned
+PMS-F-009	Priority/deadline	TC-11	Planned
+PMS-F-010	Project progress	TC-12	Planned
+PMS-F-011	Project details	TC-05, TC-13	Planned
+PMS-F-012	Project membership	TC-06, TC-13	Planned
+PMS-F-013	Priority/deadline permissions	TC-11, TC-14	Planned
+PMS-F-014	Authorized status visibility	TC-09, TC-13, TC-14	Planned
+PMS-F-015	Progress calculation	TC-12, TC-15	Planned
+PMS-NF-001	Performance	TC-16	Planned
+PMS-NF-002	Unauthorized access	TC-03, TC-13, TC-14	Planned
+PMS-NF-003	Data consistency	TC-10, TC-15	Planned
+PMS-NF-004	Concurrent use	TC-17	Planned; numeric target to agree
+PMS-NF-005	Usability	TC-18	Planned
+PMS-SR-001	Authorization	TC-13	Planned
+PMS-SR-002	Protected access	TC-03	Planned
+PMS-SR-003	Own profile	TC-04	Planned
+PMS-SR-004	Role permissions	TC-14	Planned
+PMS-SR-005	Secure communication	TC-19	Planned
+
+Status convention: Planned means mapped but not executed. Pass/Fail/Blocked must be assigned only after actual execution. The mapping is a planned test inventory and must be updated if implementation or scope changes.
+8. Assumptions, dependencies and change control
+•	PostgreSQL, application and test accounts must be available for full integration testing.
+•	Acceptance criteria and exact role matrix must be agreed before sign-off.
+•	Changes to requirements, permissions, endpoints or progress calculation must be reflected in SRS, SAD, test cases, RTM and backlog.
+•	Proposed recovery schedule: Sprint 1, 29 October–1 November 2026; Sprint 2, 1 November evening–4 November 2026. This is a proposed deviation from original course dates and requires team/instructor confirmation.
+9. Open decisions before approval
+•	Confirm the final role/permission matrix against the application.
+•	Confirm the exact progress calculation formula.
+•	Confirm numeric concurrent-user target, if formal load testing is required.
+•	Verify framework/database/API details against current repository.
+•	Obtain team and instructor approval of v1.1.
