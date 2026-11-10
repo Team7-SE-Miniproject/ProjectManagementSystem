@@ -1,6 +1,7 @@
+
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export default function TaskCard({ task, user }) {
     const [status, setStatus] = useState(task.status || "pending");
@@ -9,10 +10,16 @@ export default function TaskCard({ task, user }) {
     );
     const [saving, setSaving] = useState(false);
 
-    useEffect(() => {
+    const [previousTaskStatus, setPreviousTaskStatus] = useState(
+        task.status
+    );
+
+    // Synchronize state when the task status changes externally.
+    if (task.status !== previousTaskStatus) {
+        setPreviousTaskStatus(task.status);
         setStatus(task.status || "pending");
         setCurrentStatus(task.status || "pending");
-    }, [task.status]);
+    }
 
     // Only admins, this task's project manager, and this task's manager
     // are allowed to update its status.
