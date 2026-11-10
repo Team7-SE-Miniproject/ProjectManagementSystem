@@ -26,6 +26,8 @@ helps identify code issues before merging pull requests.
 ## QA Contribution
 Configured the CI workflow and documented the
 automated validation process.
+<<<<<<< HEAD
+=======
 
 ### Continuous Delivery (CD) Implementation
 
@@ -41,3 +43,4 @@ After successful dependency installation, ESLint validation and Next.js producti
 - Trigger: Push to configured branches and pull requests targeting `main`.
 
 **Outcome:** The CI/CD workflow executed successfully, validating the application and generating a downloadable production build artifact for delivery and local deployment.
+>>>>>>> origin/main
