@@ -3,7 +3,7 @@
 **Prepared by:** Nidhi Raghuraman  
 **Role:** QA/Test Lead  
 **Source:** Software Requirements Specification (SRS)  
-**Status:** Prepared; execution pending application availability
+**Status:** Prepared; execution pending
 
 | Test ID | Requirement ID | Test Scenario | Test Steps | Expected Result | Actual Result | Status |
 |---|---|---|---|---|---|---|

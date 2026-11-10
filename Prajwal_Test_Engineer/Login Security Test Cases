@@ -1,0 +1,28 @@
+Login Security Test Cases
+Module: Authentication / Login | Sprint: 2 | Owner: Prajwal Test Engineer
+Execution status: Not Run. Record actual results only after execution.
+Scope
+Covers login validation and security. The existing Sprint 1 test file uses POST /api/login with email and password, expecting 401 for invalid credentials and 200 for successful login. Confirm the current contract before execution. Cookie names, token format, lockout rules, and rate limits are not assumed.
+Test cases
+ID	Priority	Scenario	Preconditions	Steps	Expected result	Actual result	Status
+LOGIN-SEC-001	High	Valid credentials	Active test account exists	Submit registered email and correct password	Login succeeds per API contract; response does not expose password/hash	Not recorded	Not Run
+LOGIN-SEC-002	High	Incorrect password	Active test account exists	Submit registered email with wrong password	Login rejected; response does not reveal whether email or password was wrong beyond documented contract	Not recorded	Not Run
+LOGIN-SEC-003	High	Unregistered email	Test email has no account	Submit unknown email and password	Login rejected using documented invalid-credentials response	Not recorded	Not Run
+LOGIN-SEC-004	High	Empty email	App available	Submit empty email and non-empty password	Controlled validation error; no session created	Not recorded	Not Run
+LOGIN-SEC-005	High	Empty password	App available	Submit valid-format email and empty password	Controlled validation error; no session created	Not recorded	Not Run
+LOGIN-SEC-006	Medium	Malformed email	App available	Submit malformed email and password	Request rejected; server does not crash	Not recorded	Not Run
+LOGIN-SEC-007	High	Credential disclosure	Test account exists	Login and inspect response body	No plaintext password or password hash in response	Not recorded	Not Run
+LOGIN-SEC-008	High	Session transport protection	Login available	Login and inspect session cookie/token handling	Session credential follows documented secure mechanism; if cookie-based, verify HttpOnly, Secure over HTTPS, and suitable SameSite setting	Not recorded	Not Run
+LOGIN-SEC-009	Medium	Repeated failed attempts	Controlled test environment	Make repeated invalid attempts within policy window	Documented throttling/lockout policy is applied, if specified; record observed behavior	Not recorded	Not Run
+LOGIN-SEC-010	High	SQL-like input	Test environment	Submit SQL-like strings in email/password	Input cannot bypass authentication or cause an uncontrolled database error	Not recorded	Not Run
+LOGIN-SEC-011	Medium	Whitespace in email	Test account exists	Try email with leading/trailing spaces	Handling matches documented normalization/validation rule	Not recorded	Not Run
+LOGIN-SEC-012	High	Failed login creates no session	App available	Login with invalid credentials, then inspect session state/use protected endpoint if available	Failed login does not establish an authenticated session	Not recorded	Not Run
+
+
+Execution record
+Environment/build: To be filled
+Test date: To be filled
+Passed / Failed / Blocked: To be filled
+Evidence: To be attached
+Defect reporting
+Include test ID, environment, exact steps, sanitized request, actual status/body, expected result, and evidence. Never attach real passwords, cookies, or access tokens.

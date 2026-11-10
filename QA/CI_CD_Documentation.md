@@ -26,3 +26,21 @@ helps identify code issues before merging pull requests.
 ## QA Contribution
 Configured the CI workflow and documented the
 automated validation process.
+<<<<<<< HEAD
+=======
+
+### Continuous Delivery (CD) Implementation
+
+A Continuous Delivery stage was integrated into the existing GitHub Actions CI workflow.
+
+After successful dependency installation, ESLint validation and Next.js production build, the workflow automatically uploads the generated production build and supporting files as a GitHub Actions artifact.
+
+**Implementation details:**
+- Tool: GitHub Actions
+- Artifact action: `actions/upload-artifact@v4`
+- Artifact name: `project-management-system-build`
+- Artifact retention: 7 days
+- Trigger: Push to configured branches and pull requests targeting `main`.
+
+**Outcome:** The CI/CD workflow executed successfully, validating the application and generating a downloadable production build artifact for delivery and local deployment.
+>>>>>>> origin/main
