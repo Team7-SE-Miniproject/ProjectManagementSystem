@@ -38,8 +38,7 @@ jobs:
 
       - name: Build application
         run: npm run build
-<<<<<<< HEAD
-        
+
       - name: Upload production build artifact
         uses: actions/upload-artifact@v4
         with:
@@ -51,5 +50,3 @@ jobs:
             dev/package-lock.json
           include-hidden-files: true
           retention-days: 7
-=======
->>>>>>> origin/main
