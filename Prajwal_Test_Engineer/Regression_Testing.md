@@ -589,9 +589,9 @@ RT-01 to RT-84	Pending	Pending	Pending	Not Run	Pending
 Use one execution record per test case when testing begins. Replace the range row with individual rows or a linked test-management record as execution progresses.
 12. QA Sign-off
 - Tester: Prajwal
-- Reviewer: Pending
+- Reviewer: Pending.
 - Execution completed: Pending
 - Open critical defects: Not assessed
 - Overall regression result: Pending execution
-- Sign-off date: Pending
+- Sign-off date: Pending.
 Note: This report contains prepared regression scenarios. Execution is pending application availability. Update actual results and statuses only after tests are performed.
