@@ -9,10 +9,13 @@ export default function TaskCard({ task, user }) {
     );
     const [saving, setSaving] = useState(false);
 
-    useEffect(() => {
+    const [previousTaskStatus, setPreviousTaskStatus] = useState(task.status);
+
+    if (task.status !== previousTaskStatus) {
+        setPreviousTaskStatus(task.status);
         setStatus(task.status || "pending");
         setCurrentStatus(task.status || "pending");
-    }, [task.status]);
+    }
 
     // Only admins, this task's project manager, and this task's manager
     // are allowed to update its status.

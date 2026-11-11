@@ -66,18 +66,26 @@ export default function DashboardPage() {
     return (
         <main>
             <h1>Dashboard</h1>
-            <p className="page-subtitle">Welcome back, {user.name}. <span className="status">{user.role}</span></p>
 
+            <p className="page-subtitle">
+                Welcome back, {user.name}.
+                {" "}
+                <span className="status">{user.role}</span>
+            </p>
 
             {/* DEFAULT USER */}
             {user.role === "default" && (
                 <>
                     {data.project && (
-                        <ProjectRedirectCard project={data.project} />
+                        <ProjectRedirectCard
+                            project={data.project}
+                        />
                     )}
 
                     {data.task && (
-                        <TaskRedirectCard task={data.task} />
+                        <TaskRedirectCard
+                            task={data.task}
+                        />
                     )}
                 </>
             )}
@@ -86,12 +94,17 @@ export default function DashboardPage() {
             {user.role === "task manager" && (
                 <>
                     {data.project && (
-                        <ProjectRedirectCard project={data.project} />
+                        <ProjectRedirectCard
+                            project={data.project}
+                        />
                     )}
 
                     {data.task && (
                         <>
-                            <TaskCard task={data.task} user={user} />
+                            <TaskCard
+                                task={data.task}
+                                user={user}
+                            />
 
                             <AddUserToTask
                                 user={user}

@@ -14,7 +14,7 @@ export async function GET(request) {
             );
         }
 
-        // Get current user.
+        // Get current user
         const userResult = await pool.query(
             `SELECT user_id, name, email, role, project_id, task_id
              FROM users
@@ -31,7 +31,7 @@ export async function GET(request) {
             );
         }
 
-        // Available users for ALL Add cards.
+        // Available unassigned users
         const availableUsersResult = await pool.query(
             `SELECT user_id, name
              FROM users
@@ -55,8 +55,9 @@ export async function GET(request) {
             const taskResult = await pool.query(
                 `SELECT *
                  FROM tasks
-                 WHERE task_id = $1`,
-                [user.task_id]
+                 WHERE task_id = $1
+                   AND project_id = $2`,
+                [user.task_id, user.project_id]
             );
 
             return NextResponse.json({
@@ -68,23 +69,71 @@ export async function GET(request) {
 
         // TASK MANAGER
         if (user.role === "task manager") {
+
+            // Get project with project manager and project users
             const projectResult = await pool.query(
-                `SELECT *
-                 FROM projects
-                 WHERE project_id = $1`,
+                `SELECT
+                    p.*,
+
+                    (
+                        SELECT json_build_object(
+                            'user_id', u.user_id,
+                            'name', u.name,
+                            'email', u.email
+                        )
+                        FROM users u
+                        WHERE u.project_id = p.project_id
+                          AND u.role = 'project manager'
+                        LIMIT 1
+                    ) AS manager,
+
+                    (
+                        SELECT COALESCE(
+                            json_agg(
+                                json_build_object(
+                                    'user_id', u.user_id,
+                                    'name', u.name
+                                )
+                            ),
+                            '[]'::json
+                        )
+                        FROM users u
+                        WHERE u.project_id = p.project_id
+                          AND u.role != 'project manager'
+                    ) AS users
+
+                 FROM projects p
+                 WHERE p.project_id = $1`,
                 [user.project_id]
             );
 
+            // Get task with its task manager
             const taskResult = await pool.query(
-                `SELECT *
-                 FROM tasks
-                 WHERE task_id = $1
-                   AND project_id = $2`,
+                `SELECT
+                    t.*,
+
+                    (
+                        SELECT json_build_object(
+                            'user_id', u.user_id,
+                            'name', u.name,
+                            'email', u.email
+                        )
+                        FROM users u
+                        WHERE u.project_id = t.project_id
+                          AND u.task_id = t.task_id
+                          AND u.role = 'task manager'
+                        LIMIT 1
+                    ) AS manager
+
+                 FROM tasks t
+                 WHERE t.task_id = $1
+                   AND t.project_id = $2`,
                 [user.task_id, user.project_id]
             );
 
             const task = taskResult.rows[0] || null;
 
+            // Get users assigned to this task
             if (task) {
                 const assignedUsersResult = await pool.query(
                     `SELECT user_id, name, email, role
@@ -92,6 +141,7 @@ export async function GET(request) {
                      WHERE project_id = $1
                        AND task_id = $2
                        AND user_id != $3
+                       AND role = 'default'
                      ORDER BY name`,
                     [user.project_id, user.task_id, user.user_id]
                 );
@@ -109,18 +159,65 @@ export async function GET(request) {
 
         // PROJECT MANAGER
         if (user.role === "project manager") {
+
+            // Get project with project manager and project users
             const projectResult = await pool.query(
-                `SELECT *
-                 FROM projects
-                 WHERE project_id = $1`,
+                `SELECT
+                    p.*,
+
+                    (
+                        SELECT json_build_object(
+                            'user_id', u.user_id,
+                            'name', u.name,
+                            'email', u.email
+                        )
+                        FROM users u
+                        WHERE u.project_id = p.project_id
+                          AND u.role = 'project manager'
+                        LIMIT 1
+                    ) AS manager,
+
+                    (
+                        SELECT COALESCE(
+                            json_agg(
+                                json_build_object(
+                                    'user_id', u.user_id,
+                                    'name', u.name
+                                )
+                            ),
+                            '[]'::json
+                        )
+                        FROM users u
+                        WHERE u.project_id = p.project_id
+                          AND u.role != 'project manager'
+                    ) AS users
+
+                 FROM projects p
+                 WHERE p.project_id = $1`,
                 [user.project_id]
             );
 
+            // Get all tasks with their task managers
             const tasksResult = await pool.query(
-                `SELECT *
-                 FROM tasks
-                 WHERE project_id = $1
-                 ORDER BY task_id`,
+                `SELECT
+                    t.*,
+
+                    (
+                        SELECT json_build_object(
+                            'user_id', u.user_id,
+                            'name', u.name,
+                            'email', u.email
+                        )
+                        FROM users u
+                        WHERE u.project_id = t.project_id
+                          AND u.task_id = t.task_id
+                          AND u.role = 'task manager'
+                        LIMIT 1
+                    ) AS manager
+
+                 FROM tasks t
+                 WHERE t.project_id = $1
+                 ORDER BY t.task_id`,
                 [user.project_id]
             );
 
@@ -134,10 +231,41 @@ export async function GET(request) {
 
         // ADMIN
         if (user.role === "admin") {
+
+            // Get all projects with their managers and users
             const projectsResult = await pool.query(
-                `SELECT *
-                 FROM projects
-                 ORDER BY project_id`
+                `SELECT
+                    p.*,
+
+                    (
+                        SELECT json_build_object(
+                            'user_id', u.user_id,
+                            'name', u.name,
+                            'email', u.email
+                        )
+                        FROM users u
+                        WHERE u.project_id = p.project_id
+                          AND u.role = 'project manager'
+                        LIMIT 1
+                    ) AS manager,
+
+                    (
+                        SELECT COALESCE(
+                            json_agg(
+                                json_build_object(
+                                    'user_id', u.user_id,
+                                    'name', u.name
+                                )
+                            ),
+                            '[]'::json
+                        )
+                        FROM users u
+                        WHERE u.project_id = p.project_id
+                          AND u.role != 'project manager'
+                    ) AS users
+
+                 FROM projects p
+                 ORDER BY p.project_id`
             );
 
             return NextResponse.json({
