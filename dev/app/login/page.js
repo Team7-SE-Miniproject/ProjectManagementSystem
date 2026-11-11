@@ -32,13 +32,11 @@ export default function LoginPage() {
                 return;
             }
 
-            // Store logged-in user
             sessionStorage.setItem(
                 "user",
                 JSON.stringify(data.user)
             );
 
-            // Redirect to dashboard
             window.location.href = "/dashboard";
 
         } catch (error) {
