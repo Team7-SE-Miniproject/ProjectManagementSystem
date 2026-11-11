@@ -12,7 +12,7 @@ Verify that existing functionality continues to work correctly after application
 - Project creation, viewing, editing, and deletion where supported.
 - Task creation, assignment, status, priority, and deadline handling.
 - User profile updates.
-- Role-based access control.
+- Role-based access control
 - Dashboard and project progress.
 - Input validation, navigation, and saved-data consistency.
 Execute only scenarios supported by the current application. Confirm exact controls, roles, and deletion behavior against approved requirements.
@@ -68,7 +68,7 @@ RT-06 — Delete a project
 - Precondition: Disposable project exists; deletion is supported and user is authorized.
 - Steps: Delete the disposable project.
 - Expected Result: Project is removed or marked deleted according to requirements.
-- Actual Result: Pending | Status: Not Run
+- Actual Result: Pending | Status: Not Run.
 RT-07 — Create a task in a project
 - Feature: Tasks | Priority: High
 - Precondition: Accessible project exists.
