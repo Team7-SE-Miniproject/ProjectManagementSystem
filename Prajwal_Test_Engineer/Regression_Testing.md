@@ -107,7 +107,7 @@ RT-12 — Attempt unauthorized operation
 RT-13 — Verify project progress
 - Feature: Dashboard | Priority: Medium
 - Precondition: Project has tasks with known completion states.
-- Steps: Open dashboard or project progress view.
+- Steps: Open dashboard or project progress view..
 - Expected Result: Progress reflects task completion as implemented.
 - Actual Result: Pending | Status: Not Run
 RT-14 — Submit task with invalid deadline
