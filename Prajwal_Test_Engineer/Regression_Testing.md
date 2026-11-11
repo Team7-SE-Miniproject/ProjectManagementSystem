@@ -161,7 +161,7 @@ RT-21 — Refresh dashboard after login
 RT-22 — Use browser Back after logout
 - Feature: Authentication | Priority: High
 - Precondition: User has logged out.
-- Steps: Use browser Back to revisit a protected page.
+- Steps: Use browser Back to revisit a protected page..
 - Expected Result: Protected information is not accessible from the prior session.
 - Actual Result: Pending | Status: Not Run
 RT-23 — Create project with missing required fields
