@@ -103,8 +103,7 @@ RT-12 — Attempt unauthorized operation
 - Feature: Access Control | Priority: High
 - Precondition: Restricted account is available.
 - Steps: Attempt an operation not permitted to that account.
-- Expected Result: Operation is rejected.
-- Actual Result: Pending | Status: Not Run
+- Expected Result: Operation is rejected..
 RT-13 — Verify project progress
 - Feature: Dashboard | Priority: Medium
 - Precondition: Project has tasks with known completion states.
