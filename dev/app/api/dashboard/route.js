@@ -83,34 +83,9 @@ export async function GET(request) {
                 [user.task_id, user.project_id]
             );
 
-            const project = projectResult.rows[0] || null;
             const task = taskResult.rows[0] || null;
 
-            // Attach the project manager to the project.
-            if (project) {
-                const projectManagerResult = await pool.query(
-                    `SELECT user_id, name, email
-                     FROM users
-                     WHERE project_id = $1
-                       AND role = 'project manager'`,
-                    [user.project_id]
-                );
-
-                project.manager = projectManagerResult.rows[0] || null;
-            }
-
             if (task) {
-                // Attach the task manager to the task.
-                const taskManagerResult = await pool.query(
-                    `SELECT user_id, name, email
-                     FROM users
-                     WHERE task_id = $1
-                       AND role = 'task manager'`,
-                    [user.task_id]
-                );
-
-                task.manager = taskManagerResult.rows[0] || null;
-
                 const assignedUsersResult = await pool.query(
                     `SELECT user_id, name, email, role
                      FROM users
@@ -126,7 +101,7 @@ export async function GET(request) {
 
             return NextResponse.json({
                 user,
-                project,
+                project: projectResult.rows[0] || null,
                 task,
                 availableUsers
             });
@@ -141,21 +116,6 @@ export async function GET(request) {
                 [user.project_id]
             );
 
-            const project = projectResult.rows[0] || null;
-
-            // Attach the project manager to the project.
-            if (project) {
-                const projectManagerResult = await pool.query(
-                    `SELECT user_id, name, email
-                     FROM users
-                     WHERE project_id = $1
-                       AND role = 'project manager'`,
-                    [user.project_id]
-                );
-
-                project.manager = projectManagerResult.rows[0] || null;
-            }
-
             const tasksResult = await pool.query(
                 `SELECT *
                  FROM tasks
@@ -166,7 +126,7 @@ export async function GET(request) {
 
             return NextResponse.json({
                 user,
-                project,
+                project: projectResult.rows[0] || null,
                 tasks: tasksResult.rows,
                 availableManagers: availableUsers
             });
